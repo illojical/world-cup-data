@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+
+<html>
+<head>
+	<script type='text/javascript' src='https://d3js.org/d3.v6.min.js'></script>
+	<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js'></script>
+	<style>
+		#allcontent .content {
+			display: none;
+		}
+
+		body {
+			font: normal 14px sans-serif;
+			padding-top: 0px;
+		}
+
+		div.mainbody {
+			max-width: 1200px;
+			margin: auto;
+		}
+
+		ul.pagination {
+			display: inline-block;
+			padding: 0;
+			margin: 0;
+		}
+
+		ul.pagination li {display: inline;}
+
+		ul.pagination li a {
+			color: black;
+			float: left;
+			padding: 6px 12px;
+			text-decoration: none;
+			border-radius: 3px;
+		}
+
+		ul.pagination li a.active {
+			background-color: #4CAF50;
+			color: white;
+			border-radius: 3px;
+		}
+
+		ul.pagination li a:hover:not(.active) {background-color: #ddd;}
+
+		h1 {
+			text-align: center;
+			font: bold 40px sans-serif;
+		}
+
+		h3 {
+			opacity: 0.5;
+		}
+
+		.slider {
+			-webkit-appearance: none;
+			width: 30%;
+			height: 10px;
+			border-radius: 5px;
+			background: #d3d3d3;
+			outline: none;
+			opacity: 0.7;
+			-webkit-transition: .2s;
+			transition: opacity .2s;
+		}
+
+		.slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 15px;
+			height: 15px;
+			border-radius: 50%;
+			background: #04AA6D;
+			cursor: pointer;
+		}
+
+		.slider::-moz-range-thumb {
+			width: 15px;
+			height: 15px;
+			border-radius: 50%;
+			background: #04AA6D;
+			cursor: pointer;
+		}
+
+		.tooltip {
+			background-color: #FFF;
+			border: solid;
+			border-color: red;
+			border-width: 1px;
+			border-radius: 5px;
+			padding-top: 0px;
+			padding-left: 15px;
+			padding-right: 15px;
+			padding-bottom: 15px;
+			position: fixed;
+		}
+
+	</style>
+</head>
+<body>
+
+<div class="mainbody">
+
+<div class="description">
+	<h1>The FIFA World Cup - Team Analysis</h1>
+	<p>Every 4 years, the World Cup brings millions of fans together to share in the excitement of The Beautiful Game. Over time, several teams and regions have established themselves
+	as dominant powerhouses of international football, with a select few becoming consistently feared among all others.</p>
+</div>
+
+<div>
+	<ul class="pagination">
+		<li><a id="slide_0" href="#" onclick="show(0);">1</a></li>
+		<li><a id="slide_1" href="#" onclick="show(1);">2</a></li>
+		<li><a id="slide_2" href="#" onclick="show(2);">3</a></li>
+		<li><a href="#" onclick="showNext();">Next</a></li>
+	</ul>
+</div>
+
+<div id="allcontent">
+	<div class="content">
+		<h3>Europe and South America's Winning Ways</h3>
+
+		<div class="description">
+			<p>Since the inception of the World Cup, European and South American teams have maintained a stranglehold on world dominance.
+			However, when it comes to pure winning percentage, which teams have seen the most success? Press play below to see an interactive chart of cumulative winning percentage over time.</p>
+		</div>
+
+		<div class="description" style="padding-top: 10px; padding-bottom: 10px;">
+			<button id="startbutton" onclick="start();">Play</button>
+			<button onclick="stop();">Pause</button>
+			<button onclick="stop(true); initializeData();">Reset</button>
+			<h4 style="float: right; padding-top: 0px; margin-top: 0px;">Combined Winning Percentage</h4>
+		</div>
+		<div class="barchart"></div>
+	</div>
+	<div class="content">
+		<h3>Goal Oriented</h3>
+
+		<div class="description">
+			<p>Winning percentage tells just one side of the story. In some cases it may adversely affect teams with high participation rates and conversely overstate teams with just a few successful campaigns.
+			Looking at the total number of goals scored across all campaigns shows which teams have consistently been the most prolific.
+			</p>
+		</div>
+
+		<div class="description" style="padding-top: 10px; padding-bottom: 10px;">
+			<button id="startbuttongoals" onclick="start();">Play</button>
+			<button onclick="stop();">Pause</button>
+			<button onclick="stop(true); initializeData();">Reset</button>
+			<h4 style="float: right; padding-top: 0px; margin-top: 0px;">Total Goals Scored</h4>
+		</div>
+		<div class="barchartgoals"></div>
+	</div>
+	<div class="content">
+		<h3>Goals Equal Wins - Usually</h3>
+
+		<div class="description">
+			<p>When looking at winning percentage relative to goal scored, it starts to become obvious that the most offensively dominant teams typically have a higher winning percentage.  The chart below shows cumulative statistics up to the chosen world cup year.
+			Use the slider to go back in time and see how teams have progressed since the first World Cup in 1930.
+			<ul>
+				<li>Hover over teams to show details. Find a team by using the dropdown on the right.</li>
+				<li>Zoom in by dragging a rectangle across the chart and zoom out by double-clicking.</li>
+			</ul>
+			</p>
+		</div>
+
+		<div class="description" style="padding-top: 10px; padding-bottom: 0px;">
+			<h4 style="float: left; padding-top: 0px; margin-top: 0px; padding-right: 5px;">World Cup Year: <span id="wcyear"></span></h4> <input autocomplete="off" type="range" min="0" max="100" value="100" class="slider" id="scatteryear" disabled>
+			<select autocomplete="off" style="float: right;" id="wcteam" onchange="setScatterTeam(this);">
+				<option disabled selected>Find a team</option>
+				<option value="all">Show all teams</option>
+			</select>
+		</div>
+		<div class="wcscatter"></div>
+	</div>
+</div>
+
+</div>
+
+<script src="js/wc_data.js"></script>
+
+<script>
+	var divContainer = document.getElementById("allcontent");
+	var allDivs = divContainer.getElementsByClassName("content");
+	var currentSlideIndex = -1;
+
+	var slider = document.getElementById("scatteryear");
+	slider.oninput = function() {
+		setScatterYear(slider.value);
+	}
+
+	show(0);
+
+	function show(slideIndex) {
+		if (slideIndex == currentSlideIndex) {
+			return;
+		}
+		currentSlideIndex = slideIndex;
+
+		for (var i = 0; i < allDivs.length; i++) {
+			if (i == slideIndex) {
+				allDivs[i].style.display = "block";
+				document.getElementById("slide_" + i).classList.add("active");
+			}
+			else {
+				allDivs[i].style.display = "none";
+				document.getElementById("slide_" + i).classList.remove("active");
+			}
+		}
+
+		stop(true);
+
+		if (slideIndex == 0) {
+			wins = true;
+			initializeData();
+		}
+		else if (slideIndex == 1) {
+			wins = false;
+			initializeData();
+		}
+		else {
+			initializeScatterData();
+		}
+	}
+
+	function showNext() {
+		if (currentSlideIndex < allDivs.length - 1) {
+			show(currentSlideIndex + 1);
+		}
+	}
+</script>
+
+</body>
+</html>
