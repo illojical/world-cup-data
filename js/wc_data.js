@@ -506,28 +506,6 @@ function updateScatterData() {
     	.on("mousemove", mousemove )
     	.on("mouseleave", mouseleave );
 
-	/*
-	annotations.push({
-		type:d3.annotationCalloutRect,
-		note: {
-			title: "Look at this region"
-		},
-		data: {
-			x: 100,
-			y: 300
-		},
-		x: 100,
-		y: 300,
-		dy: 0,
-		dx: -50,
-		color: ["red"],
-		subject: {
-			width: 300,
-			height: 200
-		}
-	});
-	*/
-
 	// x axis
 	scatterSvg.append("g")
 	   .attr("class", "x axis")
@@ -582,7 +560,7 @@ function updateScatterData() {
 			y: scatterY(maxData.win_percentage),
 			dy: 0,
 			dx: -100,
-			ny: 20,
+			ny: 25,
 		});
 
 		// Add annotation to the chart
