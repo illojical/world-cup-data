@@ -1,7 +1,7 @@
 var year = 2022;
 var team = "all";
 var wins = true;
-var duration = 500;
+var duration = 300;
 var numtodisplay = 12;
 var numframes = 10;
 
@@ -70,10 +70,10 @@ function processCommonData() {
 function processData() {
 	const names = new Set(data.map(d => d.name));
 
-	const datewins = Array.from(d3.rollup(data, ([d]) => d.win_percentage, d => d.date, d => d.name))
+	const datewins = Array.from(d3.rollup(data, ([d]) => +d.win_percentage, d => d.date, d => d.name))
 	  .map(([date, data]) => [new Date(date), data])
 	  .sort(([a], [b]) => d3.ascending(a, b))
-	const dategoals = Array.from(d3.rollup(data, ([d]) => d.goals_scored, d => d.date, d => d.name))
+	const dategoals = Array.from(d3.rollup(data, ([d]) => +d.goals_scored, d => d.date, d => d.name))
 	  .map(([date, data]) => [new Date(date), data])
 	  .sort(([a], [b]) => d3.ascending(a, b))
 
