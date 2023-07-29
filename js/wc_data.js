@@ -385,9 +385,9 @@ function processScatterData() {
 	d3.select("#scatteryear")
 		.attr("disabled", null)
 		.attr("max", wcdates.length - 1)
-		.attr("value", wcdates.length - 1);
+		.attr("value", wcdates.indexOf(year));
 
-	d3.select("#wcyear").text(wcdates[wcdates.length - 1]);
+	d3.select("#wcyear").text(year);
 
     var selectTeam = d3.select("#wcteam");
     var options = selectTeam.selectAll("option");
@@ -398,6 +398,7 @@ function processScatterData() {
 		.text(function(d) { return d; });
 
 	updateScatterData();
+	updateScatterTeam();
 }
 
 function updateScatterData() {
@@ -606,7 +607,10 @@ function setScatterYear(value) {
 
 function setScatterTeam(option) {
 	team = option.value;
+	updateScatterTeam();
+}
 
+function updateScatterTeam() {
 	d3.selectAll(".dot")
 		.each(function(d) {
       		d3.select(this)
