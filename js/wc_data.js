@@ -1,7 +1,7 @@
 var year = 2022;
 var team = "all";
 var wins = true;
-var duration = 300;
+var duration = 500;
 var numtodisplay = 12;
 var numframes = 10;
 
@@ -426,9 +426,9 @@ function updateScatterData() {
 		.range([1, 25]);
 
 	// Create a color scale
-	const color = d3.scaleLinear()
-		.domain([0, 0.375, 0.75, 1.0])
-		.range(["red", "yellow", "green", "green"]);
+	//const color = d3.scaleLinear()
+	//	.domain([0, 0.375, 0.75, 1.0])
+	//	.range(["red", "yellow", "green", "green"]);
 
 	scatterX.domain([-0.1, maxX]);
 	scatterY.domain([-0.05, maxY]);
@@ -500,7 +500,8 @@ function updateScatterData() {
 			return scatterY(d.win_percentage);
 		})
 		.attr("fill-opacity", 0.5)
-		.style("stroke", function (d) { return color(d.win_percentage); })
+		//.style("stroke", function (d) { return color(d.win_percentage); })
+		.style("stroke", color())
 		.style("stroke-width", 3)
 		.style("fill", "#eee")
 	    .on("mouseover", mouseover )
@@ -603,6 +604,7 @@ function setScatterYear(value) {
 	year = wcdates[value];
 	d3.select("#wcyear").text(year);
 	updateScatterData();
+	updateScatterTeam();
 }
 
 function setScatterTeam(option) {
@@ -685,6 +687,7 @@ const mouseover = function(event, d) {
 const mousemove = function(event, d) {
 	var tooltipContent = "<h3 style='padding-bottom: 0px;'>" + d.name + "</h3><hr/>";
 	tooltipContent += "<p>";
+	tooltipContent += "Region: <b>" + regions.get(d.name) + "</b><br>";
 	tooltipContent += "Matches Played: <b>" + d.total_matches_played + "</b><br>";
 	tooltipContent += "Goals Scored: <b>" + d.goals_scored + "</b><br>";
 	tooltipContent += "Win %: <b>" + Math.round(d.win_percentage * 100) + "%</b><br>";
