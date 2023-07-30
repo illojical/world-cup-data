@@ -652,7 +652,7 @@ function updateScatterRegion() {
     	});
 
 	d3.select(".maxwins")
-		.style("visibility", function (d) { return (region == "all" || regions.get(d.data.name) == team) ? "visible" : "hidden"; });
+		.style("visibility", function (d) { return (region == "all" || regions.get(d.data.name) == region) ? "visible" : "hidden"; });
 }
 
 function brushended(event) {
