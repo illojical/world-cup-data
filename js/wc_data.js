@@ -1,5 +1,6 @@
 var year = 2022;
 var team = "all";
+var region = "all";
 var wins = true;
 var duration = 500;
 var numtodisplay = 12;
@@ -22,6 +23,7 @@ var currentIndex = 0;
 var prev = [];
 var next = [];
 var regions = [];
+var regionNames = [];
 var wcdates = [];
 var wcteams = [];
 
@@ -62,6 +64,7 @@ function processCommonData() {
 	if (data.some(d => d.region !== undefined)) {
 		regions = new Map(data.map(d => [d.name, d.region]))
 	}
+	regionNames = new Set(Array.from(regions.values()));
 
 	wcdates = Array.from(new Set(data.map(d => new Date(d.date).getUTCFullYear())));
 	wcteams = Array.from(new Set(data.map(d => d.name))).sort();
@@ -123,7 +126,6 @@ async function initchart() {
 
 	const scale = d3.scaleOrdinal(d3.schemePaired);
 	if (regions.size > 0) {
-		const regionNames = new Set(Array.from(regions.values()));
 		scale.domain(regionNames);
 
 		svg.selectAll("legenddots")
@@ -389,16 +391,25 @@ function processScatterData() {
 
 	d3.select("#wcyear").text(year);
 
+    var selectRegion = d3.select("#wcregion");
+    var regionOptions = selectRegion.selectAll(".optionregion");
+	regionOptions.data(regionNames)
+		.enter().append("option")
+		.attr("class", "optionregion")
+		.attr("value", function(d) { return d; })
+		.text(function(d) { return d; });
+
     var selectTeam = d3.select("#wcteam");
-    var options = selectTeam.selectAll("option");
-	options.data(wcteams)
+    var teamOptions = selectTeam.selectAll(".optionteam");
+	teamOptions.data(wcteams)
 		.enter().append("option")
 		.attr("class", "optionteam")
-		.attr('value', function(d) { return d; })
+		.attr("value", function(d) { return d; })
 		.text(function(d) { return d; });
 
 	updateScatterData();
 	updateScatterTeam();
+	updateScatterRegion();
 }
 
 function updateScatterData() {
@@ -605,11 +616,21 @@ function setScatterYear(value) {
 	d3.select("#wcyear").text(year);
 	updateScatterData();
 	updateScatterTeam();
+	updateScatterRegion();
 }
 
 function setScatterTeam(option) {
 	team = option.value;
+	region = "all";
+	d3.select("#wcregion").property("value", "default");
 	updateScatterTeam();
+}
+
+function setScatterRegion(option) {
+	region = option.value;
+	team = "all";
+	d3.select("#wcteam").property("value", "default");
+	updateScatterRegion();
 }
 
 function updateScatterTeam() {
@@ -621,6 +642,17 @@ function updateScatterTeam() {
 
 	d3.select(".maxwins")
 		.style("visibility", function (d) { return (team == "all" || d.data.name == team) ? "visible" : "hidden"; });
+}
+
+function updateScatterRegion() {
+	d3.selectAll(".dot")
+		.each(function(d) {
+      		d3.select(this)
+      			.style("visibility", function (d) { return (region == "all" || regions.get(d.name) == region) ? "visible" : "hidden"; });
+    	});
+
+	d3.select(".maxwins")
+		.style("visibility", function (d) { return (region == "all" || regions.get(d.data.name) == team) ? "visible" : "hidden"; });
 }
 
 function brushended(event) {
