@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
-<meta http-equiv='cache-control' content='no-cache'> 
-<meta http-equiv='expires' content='0'> 
+<meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
 <meta http-equiv='pragma' content='no-cache'>
 
 <html>
@@ -17,7 +17,7 @@
 			font: normal 14px sans-serif;
 			padding-top: 0px;
 			padding-left: 20px;
-			padding-right: 20px;			
+			padding-right: 20px;
 		}
 
 		div.mainbody {
@@ -134,7 +134,7 @@
 
 		<div class="description" style="padding-top: 10px; padding-bottom: 10px;">
 			<button id="startbutton" onclick="start();">Play</button>
-			<button onclick="stop();">Pause</button>
+			<button id="stopbutton" onclick="stop();">Pause</button>
 			<button onclick="stop(true); initializeData();">Reset</button>
 			<h4 style="float: right; padding-top: 0px; margin-top: 0px;">Combined Winning Percentage</h4>
 		</div>
@@ -152,7 +152,7 @@
 
 		<div class="description" style="padding-top: 10px; padding-bottom: 10px;">
 			<button id="startbuttongoals" onclick="start();">Play</button>
-			<button onclick="stop();">Pause</button>
+			<button id="stopbuttongoals" onclick="stop();">Pause</button>
 			<button onclick="stop(true); initializeData();">Reset</button>
 			<h4 style="float: right; padding-top: 0px; margin-top: 0px;">Total Goals Scored</h4>
 		</div>
@@ -174,14 +174,14 @@
 
 		<div class="description" style="padding-top: 10px; padding-bottom: 0px;">
 			<h4 style="float: left; padding-top: 0px; margin-top: 0px; padding-right: 5px;">World Cup Year: <span id="wcyear"></span></h4> <input autocomplete="off" type="range" min="0" max="22" value="22" class="slider" id="scatteryear" disabled>
-			<select autocomplete="off" style="float: right;" id="wcteam" onchange="setScatterTeam(this);">
-				<option value="default" disabled selected>Find a team</option>
+			<select autocomplete="off" style="float: right; padding: 5px;" id="wcteam" onchange="setScatterTeam(this);">
+				<option value="default" disabled selected>Filter by team</option>
 				<option value="all">Show all teams</option>
 			</select>
-			<select autocomplete="off" style="float: right; margin-right: 5px;" id="wcregion" onchange="setScatterRegion(this);">
+			<select autocomplete="off" style="float: right; margin-right: 5px; padding: 5px;" id="wcregion" onchange="setScatterRegion(this);">
 				<option value="default" disabled selected>Filter by region</option>
 				<option value="all">Show all regions</option>
-			</select>			
+			</select>
 		</div>
 		<div class="wcscatter"></div>
 	</div>
