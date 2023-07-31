@@ -408,8 +408,7 @@ function processScatterData() {
 		.text(function(d) { return d; });
 
 	updateScatterData();
-	updateScatterTeam();
-	updateScatterRegion();
+	updateScatterTeams();
 }
 
 function updateScatterData() {
@@ -549,47 +548,7 @@ function updateScatterData() {
 			.attr("font-weight", "bold")
 			.attr("font-size", "14px");
 
-	// Annotations and reference lines
-
-	var annotations = []
-	if (maxData) {
-		annotations.push({
-			note: {
-			  label: maxData.name + " - " + Math.round(maxData.win_percentage * 100) + "%",
-			  title: "Best Win Percentage",
-			  padding: 10,
-			  wrap: 200
-			},
-			connector: {"end": "arrow"},
-			type: d3.annotationCalloutCircle,
-			data: maxData,
-			subject: {
-			  radius: size(maxData.total_matches_played) + 20,
-			  radiusPadding: 5
-			},
-			className: "maxwins",
-			color: ["red"],
-			x: scatterX(averageGoals(maxData)),
-			y: scatterY(maxData.win_percentage),
-			dy: 0,
-			dx: -100,
-			ny: 25,
-		});
-
-		// Add annotation to the chart
-		scatterAnnotations = d3.annotation()
-		  .annotations(annotations);
-
-		scatterSvg.append("g")
-			.attr("class", "annotation-group")
-			.call(scatterAnnotations);
-
-		d3.select(".maxwins")
-			.style("pointer-events", "none");
-
-		scatterAnnotations.update();
-		scatterAnnotations.updateText();
-	}
+	// Reference lines
 
 	scatterSvg.append("line")
     	.attr("class", 'reference-line')
@@ -615,44 +574,103 @@ function setScatterYear(value) {
 	year = wcdates[value];
 	d3.select("#wcyear").text(year);
 	updateScatterData();
-	updateScatterTeam();
-	updateScatterRegion();
+	updateScatterTeams();
 }
 
 function setScatterTeam(option) {
 	team = option.value;
 	region = "all";
 	d3.select("#wcregion").property("value", "default");
-	updateScatterTeam();
+	updateScatterTeams();
 }
 
 function setScatterRegion(option) {
 	region = option.value;
 	team = "all";
 	d3.select("#wcteam").property("value", "default");
-	updateScatterRegion();
+	updateScatterTeams();
 }
 
-function updateScatterTeam() {
+function teamIsVisible(name) {
+	if (team == "all" && region == "all") {
+		return true;
+	}
+	else if (team == "all") {
+		return regions.get(name) == region;
+	}
+	else {
+		return name == team;
+	}
+}
+
+function updateScatterTeams() {
 	d3.selectAll(".dot")
 		.each(function(d) {
       		d3.select(this)
-      			.style("visibility", function (d) { return (team == "all" || d.name == team) ? "visible" : "hidden"; });
+      			.style("visibility", function (d) { return teamIsVisible(d.name) ? "visible" : "hidden"; });
     	});
 
-	d3.select(".maxwins")
-		.style("visibility", function (d) { return (team == "all" || d.data.name == team) ? "visible" : "hidden"; });
-}
+	const valueExtent = d3.extent(data, d => +d.total_matches_played)
+	const size = d3.scaleSqrt()
+		.domain(valueExtent)
+		.range([1, 25]);
 
-function updateScatterRegion() {
+	// Annotations
+
+	// Calculate max wins for the visible teams
+	var maxWin = 0.0;
+	var maxData = null;
 	d3.selectAll(".dot")
 		.each(function(d) {
-      		d3.select(this)
-      			.style("visibility", function (d) { return (region == "all" || regions.get(d.name) == region) ? "visible" : "hidden"; });
-    	});
+			if (teamIsVisible(d.name)) {
+				if (d.win_percentage > maxWin) {
+					maxWin = d.win_percentage;
+					maxData = d;
+				}
+			}
+		});
 
-	d3.select(".maxwins")
-		.style("visibility", function (d) { return (region == "all" || regions.get(d.data.name) == region) ? "visible" : "hidden"; });
+	d3.select(".maxwins").remove();
+
+	var annotations = []
+	if (maxData) {
+		annotations.push({
+			note: {
+			  label: maxData.name + " - " + Math.round(maxData.win_percentage * 100) + "%",
+			  title: "Best Win Percentage",
+			  padding: 10,
+			  wrap: 200
+			},
+			connector: {"end": "arrow"},
+			type: d3.annotationCalloutCircle,
+			data: maxData,
+			subject: {
+			  radius: size(maxData.total_matches_played) + 20,
+			  radiusPadding: 5
+			},
+			className: "maxwins",
+			color: ["red"],
+			x: scatterX(averageGoals(maxData)),
+			y: scatterY(maxData.win_percentage),
+			dy: 0,
+			dx: (scatterX(averageGoals(maxData)) < 200 ? 100 : -100),
+			ny: scatterY(maxData.win_percentage) - (size(maxData.total_matches_played) + 20) / 2 + 10,
+		});
+
+		// Add annotation to the chart
+		scatterAnnotations = d3.annotation()
+		  .annotations(annotations);
+
+		scatterSvg.append("g")
+			.attr("class", "annotation-group")
+			.call(scatterAnnotations);
+
+		d3.select(".maxwins")
+			.style("pointer-events", "none");
+
+		scatterAnnotations.update();
+		scatterAnnotations.updateText();
+	}
 }
 
 function brushended(event) {
