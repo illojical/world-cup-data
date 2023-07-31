@@ -194,6 +194,7 @@ async function drawchart(firstlaunch, index) {
 
 	currentIndex = 0;
 	d3.select("#startbutton" + chartType).text("Replay").attr("disabled", null);
+	d3.select("#stopbutton" + chartType).attr("disabled", "disabled");
 
 	return this;
 }
@@ -205,6 +206,7 @@ function stop(reset = false) {
 	svg.interrupt();
 
 	d3.select("#startbutton" + chartType).attr("disabled", null);
+	d3.select("#stopbutton" + chartType).attr("disabled", "disabled");
 
 	if (reset) {
 		d3.select(".barchart" + chartType).selectAll("*").remove();
@@ -219,6 +221,7 @@ function start() {
 
 	drawchart(false, currentIndex);
 	d3.select("#startbutton" + chartType).text("Play").attr("disabled", "disabled");
+	d3.select("#stopbutton" + chartType).attr("disabled", null);
 	return this;
 }
 
@@ -636,7 +639,7 @@ function updateScatterTeams() {
 	if (maxData) {
 		annotations.push({
 			note: {
-			  label: maxData.name + " - " + Math.round(maxData.win_percentage * 100) + "%",
+			  label: maxData.name + " - " + Math.round(maxData.win_percentage * 1000) / 10 + "%",
 			  title: "Best Win Percentage",
 			  padding: 10,
 			  wrap: 200
@@ -740,8 +743,8 @@ const mousemove = function(event, d) {
 	tooltipContent += "Region: <b>" + regions.get(d.name) + "</b><br>";
 	tooltipContent += "Matches Played: <b>" + d.total_matches_played + "</b><br>";
 	tooltipContent += "Goals Scored: <b>" + d.goals_scored + "</b><br>";
-	tooltipContent += "Win %: <b>" + Math.round(d.win_percentage * 100) + "%</b><br>";
-	tooltipContent += "Tie %: <b>" + Math.round(d.tie_percentage * 100) + "%</b>";
+	tooltipContent += "Win %: <b>" + Math.round(d.win_percentage * 1000) / 10 + "%</b><br>";
+	tooltipContent += "Tie %: <b>" + Math.round(d.tie_percentage * 1000) / 10 + "%</b>";
 	tooltipContent += "</p>";
 	tooltipContent += "<p>Total World Cups: <b>" + d.number_of_world_cups + "</b></p>";
 
